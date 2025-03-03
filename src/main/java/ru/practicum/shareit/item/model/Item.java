@@ -7,11 +7,10 @@ import ru.practicum.shareit.user.model.User;
 /**
  * TODO Sprint add-controllers.
  */
-@Getter
-@Setter
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Item {
     private Long id;
     private String name;

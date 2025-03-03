@@ -9,11 +9,9 @@ import ru.practicum.shareit.user.dto.UserDto;
 /**
  * TODO Sprint add-controllers.
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class ItemDto {
 
     private Long id;

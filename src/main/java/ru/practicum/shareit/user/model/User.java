@@ -5,11 +5,9 @@ import lombok.*;
 /**
  * TODO Sprint add-controllers.
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class User {
     private Long id;
     private String name;
