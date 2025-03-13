@@ -1,11 +1,13 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserDtoToUpdate;
+import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.controller.model.UserData;
+import ru.practicum.shareit.user.controller.model.CreateUserRequest;
+import ru.practicum.shareit.user.controller.model.UpdateUserRequest;
 
 import java.util.List;
 
@@ -20,46 +22,31 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable Long userId) {
+    public UserData getUserById(@PathVariable Long userId) {
         log.info("==>Getting user with id = {}", userId);
-        UserDto user = userService.getById(userId);
+        UserData user = userService.getById(userId);
         log.info("<==Getting user with id = {}", user.getId());
         return user;
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
+    public List<UserData> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
+    public UserData createUser(@Valid @RequestBody CreateUserRequest userDto) {
         log.info("==>Creating user: {}", userDto);
-        UserDto user = userService.createUser(userDto);
+        UserData user = userService.createUser(userDto);
         log.info("<==Creating user: {}", user);
         return user;
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserDtoToUpdate userDto) {
-        UserDto existingUser = userService.getById(userId);
-
-        if (userDto.getName() != null) {
-            existingUser.setName(userDto.getName());
-        }
-        if (userDto.getEmail() != null) {
-            if (!existingUser.getEmail().equals(userDto.getEmail())) {
-                if (userService.isAlreadyRegisteredEmail(userDto.getEmail())) {
-                    throw new IllegalArgumentException("User with this email is already registered");
-                }
-            }
-            existingUser.setEmail(userDto.getEmail());
-        }
-
+    public UserData updateUser(@PathVariable Long userId, @Valid @RequestBody UpdateUserRequest userDto) {
         log.info("==>Updating user with id = {}", userId);
-        UserDto user = userService.updateUser(userId, existingUser);
+        UserData user = userService.updateUser(userId, userDto);
         log.info("<==Updating user with id = {}", user.getId());
-
         return user;
     }
 

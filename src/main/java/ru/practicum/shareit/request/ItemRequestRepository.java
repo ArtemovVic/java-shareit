@@ -2,7 +2,7 @@ package ru.practicum.shareit.request;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dao.model.User;
 
 import java.util.HashMap;
 import java.util.List;

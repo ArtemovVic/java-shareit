@@ -11,8 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
-    private final ItemRequestService itemRequestService;
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final ItemRequestService itemRequestService;
 
     public ItemRequestController(ItemRequestService itemRequestService) {
         this.itemRequestService = itemRequestService;

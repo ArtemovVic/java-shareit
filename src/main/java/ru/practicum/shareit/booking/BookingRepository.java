@@ -1,44 +1,45 @@
 package ru.practicum.shareit.booking;
 
-
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.booking.model.Booking.Status;
+import ru.practicum.shareit.user.dao.model.User;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-@Repository
-public class BookingRepository {
-    private final Map<Long, Booking> bookings = new HashMap<>();
-    private long nextId = 1;
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+    List<Booking> findAllByBookerAndStatus(User booker, Status status);
 
-    public Booking save(Booking booking) {
-        if (booking.getId() == null) {
-            booking.setId(nextId++);
-        }
-        bookings.put(booking.getId(), booking);
-        return booking;
-    }
+    List<Booking> findAllByBookerAndStartBeforeAndEndAfter(User booker, LocalDateTime start, LocalDateTime end);
 
-    public Booking findById(Long id) {
-        return bookings.get(id);
-    }
+    List<Booking> findAllByBookerAndEndBefore(User booker, LocalDateTime end);
 
-    public Map<Long, Booking> findAll() {
-        return new HashMap<>(bookings);
-    }
+    List<Booking> findAllByBookerAndStartAfter(User booker, LocalDateTime start);
 
-    public void deleteById(Long id) {
-        bookings.remove(id);
-    }
+    List<Booking> findAllByBookerOrderByStartDesc(User booker);
 
-    public List<Booking> findAllByBookerAndStatus(User booker, Booking.Status status) {
-        return bookings.values().stream()
-                .filter(booking -> booking.getBooker().equals(booker))
-                .filter(booking -> booking.getStatus() == status)
-                .collect(Collectors.toList());
-    }
+
+    @Query("SELECT b FROM Booking b " +
+            "WHERE b.item.id = :itemId " +
+            "AND b.end < :now " +
+            "AND b.status = 'APPROVED' " +
+            "ORDER BY b.end DESC")
+    List<Booking> findLastBooking(@Param("itemId") Long itemId, @Param("now") LocalDateTime now);
+
+    @Query("SELECT b FROM Booking b " +
+            "WHERE b.item.id = :itemId " +
+            "AND b.start > :now " +
+            "AND b.status = 'APPROVED' " +
+            "ORDER BY b.start ASC")
+    List<Booking> findNextBooking(@Param("itemId") Long itemId, @Param("now") LocalDateTime now);
+
+    @Query("SELECT COUNT(b) > 0 FROM Booking b " +
+            "WHERE b.booker.id = :bookerId " +
+            "AND b.item.id = :itemId " +
+            "AND b.end < :currentTime")
+    boolean existsByBookerIdAndItemIdAndEndBefore(@Param("bookerId") Long bookerId, @Param("itemId") Long itemId,
+                                                  @Param("currentTime") LocalDateTime currentTime);
 }

@@ -1,17 +1,17 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.user.controller.model;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Data;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserDto {
-    private Long id;
+public class CreateUserRequest {
+    @NotBlank
     @Size(max = 255)
     private String name;
     @Email
-    @NonNull
+    @NotBlank
     private String email;
+
 }
