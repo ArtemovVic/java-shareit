@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.model;
+package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,23 +9,25 @@ import ru.practicum.shareit.user.dao.model.User;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Entity
-@Table(name = "requests")
-@Getter
-@Setter
+@Table(name = "comments")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemRequest {
+@Getter
+@Setter
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String description;
+    @Column(name = "text", nullable = false)
+    private String text;
     @ManyToOne
-    @JoinColumn(name = "requestor_id", nullable = false)
-    private User requestor;
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
     @Column(nullable = false)
     private LocalDateTime created;
+
 }
