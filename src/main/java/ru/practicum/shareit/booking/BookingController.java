@@ -23,7 +23,7 @@ public class BookingController {
     public BookingDto createBooking(@RequestHeader(USER_ID_HEADER) Long userId, @Valid @RequestBody BookingDto bookingDto) {
         log.info("==>Creating booking: {}", bookingDto);
         BookingDto booking = bookingService.createBooking(userId, bookingDto);
-        log.info("<==Creating booking: {}", booking.getId());
+        log.info("<==Booking with id :{} has been created", booking.getId());
         return booking;
     }
 
@@ -31,7 +31,7 @@ public class BookingController {
     public BookingDto approveBooking(@RequestHeader(USER_ID_HEADER) Long userId, @PathVariable Long bookingId, @RequestParam boolean approved) {
         log.info("==>Approve booking: {}", bookingId);
         BookingDto approveBooking = bookingService.approveBooking(userId, bookingId, approved);
-        log.info("==>Approve booking: {}", approveBooking.getId());
+        log.info("==>Booking with id :{} has been approved", approveBooking.getId());
         return approveBooking;
     }
 

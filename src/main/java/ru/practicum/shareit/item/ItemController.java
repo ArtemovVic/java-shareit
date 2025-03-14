@@ -26,7 +26,7 @@ public class ItemController {
     public ItemDto createItem(@RequestHeader(USER_ID_HEADER) Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("==>Creating item: {}", itemDto);
         ItemDto item = itemService.createItem(userId, itemDto);
-        log.info("<==Creating item: {}", item);
+        log.info("<==Item with id :{} has been created", item);
         return item;
     }
 
@@ -34,7 +34,7 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader(USER_ID_HEADER) Long userId, @PathVariable Long itemId, @RequestBody ItemDtoToUpdate itemDto) {
         log.info("==>Updating item: {}", itemDto);
         ItemDto updatedItem = itemService.updateItem(userId, itemId, itemDto);
-        log.info("<==Updating item: {}", itemDto);
+        log.info("<==Item with id :{} has been updated", itemDto);
 
         return updatedItem;
     }
@@ -43,7 +43,7 @@ public class ItemController {
     public ResponseItemWithComments getItemById(@PathVariable Long itemId) {
         log.info("==>Getting item with id: {}", itemId);
         ResponseItemWithComments item = itemService.getItemById(itemId);
-        log.info("<==Getting item with id: {}", item.getId());
+        log.info("<==Item with id :{} has been received", item.getId());
         return item;
     }
 

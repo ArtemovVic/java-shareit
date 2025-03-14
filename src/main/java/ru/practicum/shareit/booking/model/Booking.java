@@ -37,13 +37,6 @@ public class Booking {
     @Column(nullable = false)
     private Status status;
 
-    public enum Status {
-        WAITING,
-        APPROVED,
-        REJECTED,
-        CANCELED
-    }
-
     @Override
     public String toString() {
         return "Booking{" +

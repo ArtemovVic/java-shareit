@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.mapper;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.controller.mappers.UserMapper;
 
@@ -14,18 +15,11 @@ public class BookingMapper {
         bookingDto.setId(booking.getId());
         bookingDto.setStart(booking.getStart());
         bookingDto.setEnd(booking.getEnd());
-        bookingDto.setItem(ItemMapper.toDto(booking.getItem())); // Полный объект ItemDto
+        bookingDto.setItem(ItemMapper.toDto(booking.getItem()));
         bookingDto.setBooker(UserMapper.toDto(booking.getBooker()));
         bookingDto.setStatus(booking.getStatus().name());
         return bookingDto;
-        /*return new BookingDto(
-                booking.getId(),
-                booking.getStart(),
-                booking.getEnd(),
-                booking.getItem() != null ? ItemMapper.toDto(booking.getItem()) : null,
-                booking.getBooker() != null ? UserMapper.toDto(booking.getBooker()) : null,
-                booking.getStatus().toString()
-        );*/
+
     }
 
     public static Booking toEntity(BookingDto bookingDto) {
@@ -35,7 +29,7 @@ public class BookingMapper {
                 bookingDto.getEnd(),
                 bookingDto.getItem() != null ? ItemMapper.toEntity(bookingDto.getItem()) : null,
                 bookingDto.getBooker() != null ? UserMapper.toEntity(bookingDto.getBooker()) : null,
-                Booking.Status.valueOf(bookingDto.getStatus())
+                Status.valueOf(bookingDto.getStatus())
         );
     }
 }

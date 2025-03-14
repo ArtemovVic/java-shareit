@@ -1,10 +1,13 @@
 package ru.practicum.shareit.booking;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -31,7 +34,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Item with id=" + bookingDto.getItemId() + " not found."));
 
         if (!item.getAvailable()) {
-            throw new RuntimeException("The item is not available.");
+            throw new ValidationException("The item is not available.");
         }
 
         Booking booking = new Booking();
@@ -39,7 +42,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setEnd(bookingDto.getEnd());
         booking.setItem(item);
         booking.setBooker(booker);
-        booking.setStatus(Booking.Status.WAITING);
+        booking.setStatus(Status.WAITING);
 
         Booking savedBooking = bookingRepository.save(booking);
         return BookingMapper.toDto(savedBooking);
@@ -51,12 +54,12 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Item with id: " + bookingId + " not found.")
                 );
         if (!booking.getItem().getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Only the owner can confirm the booking.");
+            throw new ValidationException("Only the owner can confirm the booking.");
         }
-        if (booking.getStatus() != Booking.Status.WAITING) {
-            throw new RuntimeException("booking has already been processed");
+        if (booking.getStatus() != Status.WAITING) {
+            throw new ValidationException("booking has already been processed");
         }
-        booking.setStatus(approved ? Booking.Status.APPROVED : Booking.Status.REJECTED);
+        booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
         Booking updatedBooking = bookingRepository.save(booking);
         return BookingMapper.toDto(updatedBooking);
     }
@@ -67,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking with id: " + bookingId + " not found.")
                 );
         if (!booking.getBooker().getId().equals(userId) && !booking.getItem().getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Access is denied");
+            throw new ValidationException("Access is denied");
         }
         return BookingMapper.toDto(booking);
     }
@@ -76,17 +79,25 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBookingsByUser(Long userId, String state) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with id: " + userId + " not found.н"));;
+                .orElseThrow(() -> new NotFoundException("User with id: " + userId + " not found.н"));
+        ;
 
         List<Booking> bookings;
         LocalDateTime now = LocalDateTime.now();
 
-        bookings = switch (state.toUpperCase()) {
-            case "CURRENT" -> bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(user, now, now);
-            case "PAST" -> bookingRepository.findAllByBookerAndEndBefore(user, now);
-            case "FUTURE" -> bookingRepository.findAllByBookerAndStartAfter(user, now);
-            case "WAITING" -> bookingRepository.findAllByBookerAndStatus(user, Booking.Status.WAITING);
-            case "REJECTED" -> bookingRepository.findAllByBookerAndStatus(user, Booking.Status.REJECTED);
+        BookingState bookingState;
+        try {
+            bookingState = BookingState.valueOf(state.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            bookingState = BookingState.ALL;
+        }
+
+        bookings = switch (bookingState) {
+            case CURRENT -> bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(user, now, now);
+            case PAST -> bookingRepository.findAllByBookerAndEndBefore(user, now);
+            case FUTURE -> bookingRepository.findAllByBookerAndStartAfter(user, now);
+            case WAITING -> bookingRepository.findAllByBookerAndStatus(user, Status.WAITING);
+            case REJECTED -> bookingRepository.findAllByBookerAndStatus(user, Status.REJECTED);
             default -> bookingRepository.findAllByBookerOrderByStartDesc(user);
         };
 

@@ -25,7 +25,7 @@ public class UserController {
     public UserData getUserById(@PathVariable Long userId) {
         log.info("==>Getting user with id = {}", userId);
         UserData user = userService.getById(userId);
-        log.info("<==Getting user with id = {}", user.getId());
+        log.info("<==User with id :{} has been received", user.getId());
         return user;
     }
 
@@ -38,15 +38,15 @@ public class UserController {
     public UserData createUser(@Valid @RequestBody CreateUserRequest userDto) {
         log.info("==>Creating user: {}", userDto);
         UserData user = userService.createUser(userDto);
-        log.info("<==Creating user: {}", user);
+        log.info("<==User with id: {} has been created", user);
         return user;
     }
 
     @PatchMapping("/{userId}")
     public UserData updateUser(@PathVariable Long userId, @Valid @RequestBody UpdateUserRequest userDto) {
-        log.info("==>Updating user with id = {}", userId);
+        log.info("==>Updating user with id: {}", userId);
         UserData user = userService.updateUser(userId, userDto);
-        log.info("<==Updating user with id = {}", user.getId());
+        log.info("<==User with id: {} has been updated", user.getId());
         return user;
     }
 
@@ -54,6 +54,7 @@ public class UserController {
     public void deleteUser(@PathVariable Long userId) {
         log.info("==>Deleting user with id = {}", userId);
         userService.deleteUser(userId);
+        log.info("==>User with id: {} has been deleted", userId);
 
     }
 }
